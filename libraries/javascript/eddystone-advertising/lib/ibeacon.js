@@ -114,14 +114,14 @@
 
     static _encodeNumber(num, expected_length) {
       if (typeof num !== 'number') {
-        throw new Error('Invalid number: ' + num);
+        throw new Error('Input not a number: ' + num);
       }
       if (num < 0 || num > 65535) {
         throw new Error('major and minor must be between 0 and 65535.');
       }
       let str;
       // Convert number to string and pad with zeros
-      str = ("0000" + num.toString(16)).substr(-(MAJOR_MINOR_LENGTH*2));
+      str = ('0000' + num.toString(16)).substr(-(MAJOR_MINOR_LENGTH*2));
       // A hex string is twice as long as the byte array it represents.
       let str_expected_length = expected_length * 2;
       return IBeacon._encodeString(str, str_expected_length);

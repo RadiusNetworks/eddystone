@@ -106,7 +106,7 @@ describe('IBeacon', () => {
     it('Valid Number', () => {
       expect(IBeacon._encodeNumber(1, 2)).eql([0, 0x01]);
     });
-  })
+  });
   describe('_validateByteArray()', () => {
     it('Too long array', () => {
       expect(() => IBeacon._validateByteArray([1,2,3], 2)).to.throw(/length/);
