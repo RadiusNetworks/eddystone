@@ -21,6 +21,8 @@ describe('EddystoneChromeOS', () => {
                                       .not.to.throw(/Unsupported Frame Type/);
         expect(() => EddystoneChromeOS._constructAdvertisement({type: 'uid'}))
                                       .not.to.throw(/Unsupported Frame Type/);
+        expect(() => EddystoneChromeOS._constructAdvertisement({type: 'ibeacon'}))
+                                      .not.to.throw(/Unsupported Frame Type/);
         expect(() => EddystoneChromeOS._constructAdvertisement({type: 'tlm'}))
                                       .to.throw(Error, /Unsupported Frame Type/);
         expect(() => EddystoneChromeOS._constructAdvertisement({}))
@@ -94,6 +96,26 @@ describe('EddystoneChromeOS', () => {
           advertisedTxPower: -10,
           namespace: 'GGG',
           instance: 'GGG'
+        })).to.throw(Error);
+      });
+    });
+    describe('iBeacon', () => {
+      it('Valid iBeacon', () => {
+        expect(EddystoneChromeOS._constructAdvertisement({
+          type: 'ibeacon',
+          advertisedTxPower: -59,
+          uuid: '12345678901234567890123456789012',
+          major: 65535,
+          minor: 65535
+        }));
+      });
+      it('Invalid iBeacon', () => {
+        expect(() => EddystoneChromeOS._constructAdvertisement({
+          type: 'ibeacon',
+          advertisedTxPower: -59,
+          uuid: '12345678901234567890123456789012',
+          major: 70000,
+          minor: 70000,
         })).to.throw(Error);
       });
     });

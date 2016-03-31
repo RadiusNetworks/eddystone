@@ -171,7 +171,87 @@ describe('Eddystone', () => {
       });
     });
   });
-
+  describe('ibeacon', () => {
+    let test_uuid = '00000000000000000000000000000000';
+    let test_major = '0000';
+    let test_minor = '0000';
+    [{
+      name: 'No type, no advertisedTxPower, no uuid, no major/minor',
+      options: {},
+      errorRegex: /type|advertisedTxPower|uuid|major|minor/
+    }, {
+      name: 'No type, no advertisedTxPower, no uuid, yes major/minor',
+      options: {major: test_major, minor: test_minor},
+      errorRegex: /type|advertisedTxPower|uuid/
+    }, {
+      name: 'No type, no advertisedTxPower, yes uuid, no major/minor',
+      options: {uuid: test_uuid},
+      errorRegex: /type|advertisedTxPower|major|minor/
+    }, {
+      name: 'No type, no advertisedTxPower, yes uuid, yes major/minor',
+      options: {uuid: test_uuid, major: test_major, minor: test_minor},
+      errorRegex: /type|advertisedTxPower/
+    }, {
+      name: 'No type, yes advertisedTxPower, no uuid, no major/minor',
+      options: {advertisedTxPower: -10},
+      errorRegex: /type|uuid|major|minor/
+    }, {
+      name: 'No type, yes advertisedTxPower, no uuid, yes major/minor',
+      options: {advertisedTxPower: -10, major: test_major, minor: test_minor},
+      errorRegex: /type|uuid/
+    }, {
+      name: 'No type, yes advertisedTxPower, yes uuid, no major/minor',
+      options: {advertisedTxPower: -10, uuid: test_uuid},
+      errorRegex: /type|major|minor/
+    }, {
+      name: 'No type, yes advertisedTxPower, yes uuid, yes major/minor',
+      options: {advertisedTxPower: -10, uuid: test_uuid,
+                major: test_major, minor: test_minor},
+      errorRegex: /type/
+    }, {
+      name: 'Yes type, no advertisedTxPower, no uuid, no major/minor',
+      options: {type: 'ibeacon'},
+      errorRegex: /advertisedTxPower|uuid|major|minor/
+    }, {
+      name: 'Yes type, no advertisedTxPower, no uuid, yes major/minor',
+      options: {type: 'ibeacon', major: test_major, minor: test_minor},
+      errorRegex: /advertisedTxPower|uuid/
+    }, {
+      name: 'Yes type, no advertisedTxPower, yes uuid, no major/minor',
+      options: {type: 'ibeacon',uuid: test_uuid},
+      errorRegex: /advertisedTxPower|major|minor/
+    }, {
+      name: 'Yes type, no advertisedTxPower, yes uuid, yes major/minor',
+      options: {type: 'ibeacon', uuid: test_uuid,
+                major: test_major, minor: test_minor},
+      errorRegex: /advertisedTxPower/
+    }, {
+      name: 'Yes type, yes advertisedTxPower, no uuid, no major/minor',
+      options: {type: 'ibeacon', advertisedTxPower: -10},
+      errorRegex: /uuid|major|minor/
+    }, {
+      name: 'Yes type, yes advertisedTxPower, no uuid, yes major/minor',
+      options: {type: 'ibeacon', advertisedTxPower: -10,
+                major: test_major, minor: test_minor},
+      errorRegex: /uuid/
+    }, {
+      name: 'Yes type, yes advertisedTxPower, yes uuid, no major/minor',
+      options: {type: 'ibeacon', advertisedTxPower: -10,
+                uuid: test_uuid},
+      errorRegex: /major|minor/
+    }].forEach(test => {
+      it(test.name, () => {
+        expect(() => Eddystone._checkAdvertisementOptions(test.options))
+          .to.throw(TypeError, test.errorRegex);
+      });
+    });
+    it('Yes type, yes advertisedTxPower, yes namespace, yes major/minor', () => {
+      expect(() => Eddystone._checkAdvertisementOptions({
+        type: 'ibeacon', advertisedTxPower: -10,
+        uuid: test_uuid, major: test_major, minor: test_minor
+      })).to.not.throw();
+    });
+  });
   describe('registerAdvertisement()', () => {
     let options = {
       type: 'url',
