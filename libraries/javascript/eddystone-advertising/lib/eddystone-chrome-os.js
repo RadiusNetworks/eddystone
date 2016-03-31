@@ -8,9 +8,11 @@
 
   let EddystoneURL = require('./eddystone-url.js');
   let EddystoneUID = require('./eddystone-uid.js');
+  let IBeacon = require('./ibeacon.js');
   let EddystoneAdvertisement = require('./eddystone-advertisement.js').EddystoneAdvertisement;
   const EddystoneFrameType = require('./eddystone-advertisement.js').EddystoneFrameType;
   const EDDYSTONE_UUID = require('./eddystone-advertisement.js').EDDYSTONE_UUID;
+  const IBEACON_ID = require('./eddystone-advertisement.js').IBEACON_ID;
   /**
      This class wraps the underlying ChromeOS BLE Advertising API.
      @todo Add link to API.
@@ -24,6 +26,7 @@
        @property {string} type
        @property {Array} serviceUuids
        @property {Object} serviceData {uuid: {string}, data: {number[]}}
+       @property {Object} manufacturerData {id: {int}, data: {number[]}}
      */
 
     /**
@@ -85,23 +88,35 @@
        https://github.com/google/eddystone/tree/master/eddystone-url#eddystone-url-http-url-encoding
      */
     static _constructAdvertisement(options) {
-      let data;
-      if (options.type === EddystoneFrameType.URL) {
-        data = EddystoneURL.constructServiceData(options.url, options.advertisedTxPower);
-      } else if (options.type === EddystoneFrameType.UID) {
-        data = EddystoneUID.constructServiceData(
-          options.advertisedTxPower, options.namespace, options.instance);
+      let data, advertisement;
+      if (options.type ===  EddystoneFrameType.URL || options.type === EddystoneFrameType.UID) {
+        if (options.type === EddystoneFrameType.URL) {
+          data = EddystoneURL.constructServiceData(options.url, options.advertisedTxPower);
+        } else if (options.type === EddystoneFrameType.UID) {
+          data = EddystoneUID.constructServiceData(
+            options.advertisedTxPower, options.namespace, options.instance);
+        }
+        advertisement = {
+          type: 'broadcast',
+          serviceUuids: [EDDYSTONE_UUID],
+          serviceData: [{
+            uuid: EDDYSTONE_UUID,
+            data: data
+          }]
+        };
+      } else if (options.type ===  EddystoneFrameType.IBEACON) {
+        data = IBeacon.constructManufacturerData(options.uuid, options.major, options.minor, options.advertisedTxPower);
+        advertisement = {
+          type: 'broadcast',
+          manufacturerData: [{
+            id: IBEACON_ID,
+            data: data
+          }]
+        };
       } else {
         throw new Error('Unsupported Frame Type: ' + options.type);
       }
-      return {
-        type: 'broadcast',
-        serviceUuids: [EDDYSTONE_UUID],
-        serviceData: [{
-          uuid: EDDYSTONE_UUID,
-          data: data
-        }]
-      };
+      return advertisement;
     }
   }
   module.exports = EddystoneChromeOS;

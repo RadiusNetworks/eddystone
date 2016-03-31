@@ -21,7 +21,8 @@
   const EddystoneFrameType = {
     URL: 'url',
     UID: 'uid',
-    TLM: 'tlm'
+    TLM: 'tlm',
+    IBEACON: 'ibeacon'
   };
 
   /**
@@ -32,6 +33,15 @@
      @alias module:eddystone-advertisement.EDDYSTONE_UUID
    */
   const EDDYSTONE_UUID = 'FEAA';
+
+  /**
+     Assigned ID for iBeacon Advertisements
+     @private
+     @constant {string}
+     @default
+     @alias module:eddystone-advertisement.IBEACON_ID
+   */
+  const IBEACON_ID = '004C';
 
   /**
      Represents the Advertisement being broadcasted.
@@ -64,8 +74,8 @@
        */
       this.type = undefined;
       /**
-         Tx Power included in the advertisement. Only present if `type === 'url'`
-         or `type === 'uid'`.
+         Tx Power included in the advertisement. Only present if `type === 'url'`,
+         `type === 'uid'`, or `type === 'ibeacon'`.
          @type {number|undefined}
        */
       this.advertisedTxPower = undefined;
@@ -84,6 +94,21 @@
          @type {string|undefined}
       */
       this.instance = undefined;
+      /**
+         Hex string of the uuid being advertised. Only present if `type === 'ibeacon'`.
+         @type {string|undefined}
+      */
+      this.uuid = undefined;
+      /**
+         Hex string of the major being advertised. Only present if `type === 'ibeacon'`.
+         @type {string|undefined}
+      */
+      this.major = undefined;
+      /**
+         Hex string of the uuid being advertised. Only present if `type === 'ibeacon'`.
+         @type {string|undefined}
+      */
+      this.minor = undefined;
 
       if (options.type == EddystoneFrameType.URL) {
         this.id = id;
@@ -96,6 +121,13 @@
         this.advertisedTxPower = options.advertisedTxPower;
         this.namespace = options.namespace;
         this.instance = options.instance;
+      } else if (options.type == EddystoneFrameType.IBEACON) {
+        this.id = id;
+        this.type = options.type;
+        this.advertisedTxPower = options.advertisedTxPower;
+        this.uuid = options.uuid;
+        this.major = options.major;
+        this.minor = options.minor;
       } else {
         throw new Error('Unsupported Frame Type');
       }
@@ -117,4 +149,5 @@
   exports.EddystoneAdvertisement = EddystoneAdvertisement;
   exports.EddystoneFrameType = EddystoneFrameType;
   exports.EDDYSTONE_UUID = EDDYSTONE_UUID;
+  exports.IBEACON_ID = IBEACON_ID;
 })();
