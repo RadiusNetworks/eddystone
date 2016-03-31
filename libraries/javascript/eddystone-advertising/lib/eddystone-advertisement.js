@@ -37,11 +37,11 @@
   /**
      Assigned ID for iBeacon Advertisements
      @private
-     @constant {string}
+     @constant {number}
      @default
      @alias module:eddystone-advertisement.IBEACON_ID
    */
-  const IBEACON_ID = '004C';
+  const IBEACON_ID = 76;
 
   /**
      Represents the Advertisement being broadcasted.

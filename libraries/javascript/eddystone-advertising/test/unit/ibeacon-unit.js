@@ -70,6 +70,14 @@ describe('IBeacon', () => {
       expect(() => IBeacon._getMajorMinorByteArray([1])).to.throw(Error);
     });
   });
+  describe('_getAdvertisedTxPowerArray()', () => {
+    it('Correct Advertised Tx Power', () => {
+      expect(IBeacon._getAdvertisedTxPowerArray(-59)).to.eql([197]);
+    });
+    it('Invalid Advertised Tx Power', () => {
+      expect(() => IBeacon._getAdvertisedTxPowerArray(100)).to.throw(Error);
+    });
+  });
   describe('_encodeString()', () => {
     it('Odd expected length', () => {
       expect(() => IBeacon._encodeString('012', 3)).to.throw(/length/);

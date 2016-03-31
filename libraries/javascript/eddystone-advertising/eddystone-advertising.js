@@ -38,11 +38,11 @@
   /**
      Assigned ID for iBeacon Advertisements
      @private
-     @constant {string}
+     @constant {number}
      @default
      @alias module:eddystone-advertisement.IBEACON_ID
    */
-  const IBEACON_ID = '004C';
+  const IBEACON_ID = 76;
 
   /**
      Represents the Advertisement being broadcasted.
@@ -783,11 +783,11 @@
       if (advertisedTxPower < -100 || advertisedTxPower > 20) {
         throw new Error('Invalid Tx Power value: ' + advertisedTxPower + '.');
       }
-      let base_frame = [IBEACON_PREAMBLE];
+      let base_frame = IBeacon.getByteArray(IBEACON_PREAMBLE, 2);
       Array.prototype.push.apply(base_frame, IBeacon._getUuidByteArray(uuid));
       Array.prototype.push.apply(base_frame, IBeacon._getMajorMinorByteArray(major));
       Array.prototype.push.apply(base_frame, IBeacon._getMajorMinorByteArray(minor));
-      Array.prototype.push.apply(base_frame, [advertisedTxPower]);
+      Array.prototype.push.apply(base_frame, IBeacon._getAdvertisedTxPowerArray(advertisedTxPower));
       return base_frame;
     }
 
@@ -831,6 +831,13 @@
 
     static _getMajorMinorByteArray(majorMinor) {
       return IBeacon.getByteArray(majorMinor, MAJOR_MINOR_LENGTH);
+    }
+
+    static _getAdvertisedTxPowerArray(advertisedTxPower) {
+      if (advertisedTxPower < -100 || advertisedTxPower > 20) {
+        throw new Error('Invalid Tx Power value: ' + advertisedTxPower + '.');
+      }
+      return [(advertisedTxPower + 256)];
     }
 
     static _encodeString(str, expected_length) {

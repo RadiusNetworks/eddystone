@@ -40,11 +40,11 @@
       if (advertisedTxPower < -100 || advertisedTxPower > 20) {
         throw new Error('Invalid Tx Power value: ' + advertisedTxPower + '.');
       }
-      let base_frame = [IBEACON_PREAMBLE];
+      let base_frame = IBeacon.getByteArray(IBEACON_PREAMBLE, 2);
       Array.prototype.push.apply(base_frame, IBeacon._getUuidByteArray(uuid));
       Array.prototype.push.apply(base_frame, IBeacon._getMajorMinorByteArray(major));
       Array.prototype.push.apply(base_frame, IBeacon._getMajorMinorByteArray(minor));
-      Array.prototype.push.apply(base_frame, [advertisedTxPower]);
+      Array.prototype.push.apply(base_frame, IBeacon._getAdvertisedTxPowerArray(advertisedTxPower));
       return base_frame;
     }
 
@@ -88,6 +88,13 @@
 
     static _getMajorMinorByteArray(majorMinor) {
       return IBeacon.getByteArray(majorMinor, MAJOR_MINOR_LENGTH);
+    }
+
+    static _getAdvertisedTxPowerArray(advertisedTxPower) {
+      if (advertisedTxPower < -100 || advertisedTxPower > 20) {
+        throw new Error('Invalid Tx Power value: ' + advertisedTxPower + '.');
+      }
+      return [(advertisedTxPower + 256)];
     }
 
     static _encodeString(str, expected_length) {

@@ -103,7 +103,7 @@ describe('EddystoneChromeOS', () => {
       it('Valid iBeacon', () => {
         expect(EddystoneChromeOS._constructAdvertisement({
           type: 'ibeacon',
-          advertisedTxPower: -10,
+          advertisedTxPower: -59,
           uuid: '12345678901234567890123456789012',
           major: 65535,
           minor: 65535
@@ -112,7 +112,7 @@ describe('EddystoneChromeOS', () => {
       it('Invalid iBeacon', () => {
         expect(() => EddystoneChromeOS._constructAdvertisement({
           type: 'ibeacon',
-          advertisedTxPower: -10,
+          advertisedTxPower: -59,
           uuid: '12345678901234567890123456789012',
           major: 70000,
           minor: 70000,
