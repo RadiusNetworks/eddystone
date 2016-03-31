@@ -17,6 +17,12 @@ describe('IBeacon', () => {
     it('Invalid String', () => {
       expect(() => IBeacon.getByteArray('GGGG', 2)).to.throw(Error);
     });
+    it('Valid Number', () => {
+      expect(IBeacon.getByteArray(1, 2)).to.eql([0, 0x01]);
+    });
+    it('Invalid Number', () => {
+      expect(() => IBeacon.getByteArray(65536, 2)).to.throw(Error);
+    });
     it('Valid byte array', () => {
       expect(IBeacon.getByteArray([1, 2, 3, 4], 4)).to.eql([1, 2, 3, 4]);
     });
@@ -51,11 +57,11 @@ describe('IBeacon', () => {
     });
   });
   describe('_getMajorMinorByteArray()', () => {
-    it('Valid String Major/Minor', () => {
-      expect(IBeacon._getMajorMinorByteArray('0102')).to.eql([1,2]);
+    it('Valid Number Major/Minor', () => {
+      expect(IBeacon._getMajorMinorByteArray(1)).to.eql([0,1]);
     });
-    it('Invalid Length String Major/Minor', () => {
-      expect(() => IBeacon._getMajorMinorByteArray('01')).to.throw(Error);
+    it('Invalid Number Major/Minor', () => {
+      expect(() => IBeacon._getMajorMinorByteArray(-1)).to.throw(Error);
     });
     it('Valid Byte Array Major/Minor', () => {
       expect(IBeacon._getMajorMinorByteArray([1,2])).to.eql([1,2]);
@@ -84,6 +90,23 @@ describe('IBeacon', () => {
       expect(IBeacon._encodeString('abcdef', 6)).eql([0xab, 0xcd, 0xef]);
     });
   });
+  describe('_encodeNumber()', () => {
+    it('Too Large Number', () => {
+      expect(() => IBeacon._encodeNumber(65536, 2)).to.throw(/major/);
+    });
+    it('Too Small Number', () => {
+      expect(() => IBeacon._encodeNumber(-1, 2)).to.throw(/major/);
+    });
+    it('Correct Number', () => {
+      expect(IBeacon._encodeNumber(65535, 2)).to.eql([0xff,0xff]);
+    });
+    it('Invalid characters Number', () => {
+      expect(() => IBeacon._encodeNumber('string', 2)).to.throw(/number/);
+    });
+    it('Valid Number', () => {
+      expect(IBeacon._encodeNumber(1, 2)).eql([0, 0x01]);
+    });
+  })
   describe('_validateByteArray()', () => {
     it('Too long array', () => {
       expect(() => IBeacon._validateByteArray([1,2,3], 2)).to.throw(/length/);

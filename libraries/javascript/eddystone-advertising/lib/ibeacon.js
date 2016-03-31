@@ -30,9 +30,9 @@
        Constructs a valid iBeacon manufacturer data from a Tx Power value, uuid,
        major and minor.
        @param {number} advertisedTxPower The Tx Power included in the service data.
-       @param {number[]|string} uuid The uuidto advertise.
-       @param {number[]|string} major The major to advertise.
-       @param {number[]|string} minor The minor to advertise.
+       @param {number[]|string} uuid The uuid to advertise.
+       @param {number[]|number} major The major to advertise.
+       @param {number[]|number} minor The minor to advertise.
        @returns {number[]} The manufacturer data.
      */
     static constructManufacturerData(uuid, major, minor, advertisedTxPower) {
@@ -60,6 +60,9 @@
         // A hex string is twice as long as the byte array it represents.
         let str_expected_length = expected_length * 2;
         return IBeacon._encodeString(value, str_expected_length);
+      }
+      if (typeof value === 'number') {
+        return IBeacon._encodeNumber(value, expected_length);
       }
       if (Array.isArray(value)) {
         return IBeacon._validateByteArray(value, expected_length);
@@ -107,6 +110,21 @@
         bytes.push(parseInt(str.substr(i, 2), 16));
       }
       return bytes;
+    }
+
+    static _encodeNumber(num, expected_length) {
+      if (typeof num !== 'number') {
+        throw new Error('Invalid number: ' + num);
+      }
+      if (num < 0 || num > 65535) {
+        throw new Error('major and minor must be between 0 and 65535.');
+      }
+      let str;
+      // Convert number to string and pad with zeros
+      str = ("0000" + num.toString(16)).substr(-(MAJOR_MINOR_LENGTH*2));
+      // A hex string is twice as long as the byte array it represents.
+      let str_expected_length = expected_length * 2;
+      return IBeacon._encodeString(str, str_expected_length);
     }
 
     static _validateByteArray(arr, expected_length) {

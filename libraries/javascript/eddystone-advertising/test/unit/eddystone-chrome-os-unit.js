@@ -105,17 +105,17 @@ describe('EddystoneChromeOS', () => {
           type: 'ibeacon',
           advertisedTxPower: -10,
           uuid: '12345678901234567890123456789012',
-          major: '0000',
-          minor: '0000'
+          major: 65535,
+          minor: 65535
         }));
       });
       it('Invalid iBeacon', () => {
         expect(() => EddystoneChromeOS._constructAdvertisement({
           type: 'ibeacon',
           advertisedTxPower: -10,
-          uuid: 'GGG',
-          major: 'GGG',
-          minor: 'GGG',
+          uuid: '12345678901234567890123456789012',
+          major: 70000,
+          minor: 70000,
         })).to.throw(Error);
       });
     });
